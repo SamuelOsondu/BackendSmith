@@ -139,6 +139,45 @@ If blocked:
 
 ---
 
+## Rule 13: Unified Response Format
+
+Every endpoint must return a response in the same structure.
+
+### Required structure:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": ""
+}
+```
+
+### Field rules:
+
+- `success` — always a boolean. `true` when the operation completed without error. `false` on any failure.
+- `data` — the actual response body. Object or array depending on endpoint. Must be `null` or `{}` when there is nothing to return (e.g. delete operations).
+- `message` — a human-readable string. Always present. Describes the outcome briefly. Examples: `"User created successfully"`, `"Invalid credentials"`, `"Order not found"`.
+
+### Error responses must also follow this structure:
+
+```json
+{
+  "success": false,
+  "data": null,
+  "message": "A clear explanation of what went wrong"
+}
+```
+
+### Important rules:
+
+- No endpoint may return a raw object, raw array, or inconsistent shape
+- HTTP status codes must still be correct (200, 201, 400, 401, 404, 500, etc.) — they are not replaced by the `success` field
+- Validation errors may include a `errors` field inside `data` for field-level detail
+- This format must be enforced at the response layer, not scattered per-controller
+
+---
+
 ## Final Rule
 
 BackendSmith must always aim to produce code that:
